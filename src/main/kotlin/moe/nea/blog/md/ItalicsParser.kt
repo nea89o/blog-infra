@@ -17,19 +17,10 @@ object ItalicsParser : InlineParser {
 
         if (firstStarCount < 1 || firstStarCount > 3) error("Invalid italics/bold sequence")
 
-        val isBold = firstStarCount >= 2
-        val isItalics = (firstStarCount % 2) == 1
-
-        val firstSequence = mutableListOf<MarkdownFormat>()
-        var remainingText = text.substring(firstStarCount)
-        var lastToken: MarkdownFormat = Begin() // TODO: dedicated begin token
-        while (remainingText.isNotEmpty()) {
-            val (element, next) = parser.parseInlineTextOnce(lastToken, remainingText)
-            remainingText = next
-            lastToken = element
-            firstSequence.add(element)
-            if (element !is Whitespace && next.startsWith("*")) break
-        }
+        var (firstSequence, remainingText) = parser.parseInlineTextUntil(
+            text.substring(firstStarCount),
+            Begin()
+        ) { lookback, remaining -> lookback !is Whitespace && remaining.startsWith("*") } // TODO: free standing *
 
         var secondStarCount = 0
         while (secondStarCount in remainingText.indices) {
@@ -51,15 +42,11 @@ object ItalicsParser : InlineParser {
             return Pair(firstElement, remainingText)
         }
 
-        val secondSequence = mutableListOf<MarkdownFormat>()
-        lastToken = Begin()
-        while (remainingText.isNotEmpty()) {
-            val (element, next) = parser.parseInlineTextOnce(lastToken, remainingText)
-            remainingText = next
-            lastToken = element
-            secondSequence.add(element)
-            if (element !is Whitespace && next.startsWith("*")) break
+        // TODO: better begin
+        val (secondSequence, _remainingText) = parser.parseInlineTextUntil(remainingText, Begin()) { lookback, remaining ->
+            lookback !is Whitespace && remaining.startsWith("*")
         }
+        remainingText = _remainingText
 
         var thirdStarCount = 0
         while (thirdStarCount in remainingText.indices) {
@@ -75,7 +62,7 @@ object ItalicsParser : InlineParser {
         if (thirdStarCount != firstStarCount - secondStarCount) {
             error("Invalid italics/bold sequence")
         }
-        var secondElement = parser.collapseInlineFormat(secondSequence, false)
+        val secondElement = parser.collapseInlineFormat(secondSequence, false)
         var combined: MarkdownFormat = FormatSequence(firstElement, secondElement)
         if (thirdStarCount == 1)
             combined = Italics(combined)

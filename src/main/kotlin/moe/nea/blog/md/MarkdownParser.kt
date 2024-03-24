@@ -50,6 +50,25 @@ class MarkdownParser(source: String) {
         return line.substring(blockIndents)
     }
 
+    fun parseInlineTextUntil(
+        text: String,
+        initialLookback: MarkdownFormat,
+        breakout: (lookback: MarkdownFormat, remaining: String) -> Boolean
+    ): Pair<List<MarkdownFormat>, String> {
+        val seq = mutableListOf<MarkdownFormat>()
+        var remaining = text
+        var lastToken: MarkdownFormat = initialLookback
+        while (remaining.isNotEmpty()) {
+            val (tok, next) = parseInlineTextOnce(lastToken, remaining)
+            seq.add(tok)
+            lastToken = tok
+            remaining = next
+            if (breakout(tok, next))
+                break
+        }
+        return seq to remaining
+    }
+
     fun parseInlineTextOnce(lookback: MarkdownFormat, text: String): Pair<MarkdownFormat, String> {
         val parser = inlineParsers.find { it.detect(lookback, text) }
         if (parser != null)
@@ -66,16 +85,9 @@ class MarkdownParser(source: String) {
     }
 
     fun parseInlineText(text: String): MarkdownFormat {
-        val seq = mutableListOf<MarkdownFormat>()
-        var remaining = text
-        var lastToken: MarkdownFormat = Begin()
-        while (remaining.isNotEmpty()) {
-            val (tok, next) = parseInlineTextOnce(lastToken, remaining)
-            seq.add(tok)
-            lastToken = tok
-            remaining = next
-        }
-        return collapseInlineFormat(seq, true)
+        val (tokens, rest) = parseInlineTextUntil(text, Begin()) { _, _ -> false }
+        require(rest.isEmpty())
+        return collapseInlineFormat(tokens, true)
     }
 
     private fun expandMarkdownFormats(sequence: List<MarkdownFormat>): List<MarkdownFormat> {
