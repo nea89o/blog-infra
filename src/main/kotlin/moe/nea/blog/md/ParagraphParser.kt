@@ -17,7 +17,7 @@ object ParagraphParser : BlockParser {
             } else {
                 emptyLineCount = 0
             }
-            if (emptyLineCount == 2) {
+            if (emptyLineCount == 1) {
                 break
             }
             text += " $trimmedLine"

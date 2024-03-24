@@ -14,7 +14,6 @@ class TestItalics : MarkdownTest() {
         assertInlineFormat("<i><b>both</b> just italics</i>", "***both** just italics*")
     }
 
-
     @Test
     fun otherMarkdownInItalics() {
         assertInlineFormat(

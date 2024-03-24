@@ -12,6 +12,8 @@ class MarkdownParser(source: String) {
 
     private val blockParsers = mutableListOf<BlockParser>()
     private val inlineParsers = mutableListOf<InlineParser>()
+    private val preprocessors = Stack<LinePreProcessor>()
+    private var peekedLine: String? = null
 
     fun findParserFor(line: String): BlockParser? {
         return blockParsers.filter { it.detect(line) }
@@ -24,30 +26,58 @@ class MarkdownParser(source: String) {
         return blockParser.parse(this)
     }
 
+    fun pushPreProcessor(preProcessor: LinePreProcessor) {
+        peekedLine = null
+        preprocessors.push(preProcessor)
+    }
+
+    fun popPreProcessor() {
+        peekedLine = null
+        preprocessors.pop()
+    }
+
+    fun preProcessLine(string: String): String? {
+        var acc = string
+        for (processor in preprocessors) {
+            acc = processor.preprocess(lineIndex, acc) ?: return null
+        }
+        return acc
+    }
+
     fun pushIndent(newIndent: Int) {
-        require(newIndent > blockIndents)
         indentStack.push(blockIndents)
-        blockIndents = newIndent
+        blockIndents += newIndent
+        peekedLine = null
     }
 
     fun popIndent() {
         blockIndents = indentStack.pop()
+        peekedLine = null
+    }
+
+    fun unpeekLine() {
+        peekedLine = null
     }
 
     fun consumeLine(): String? {
         val line = peekLine()
-        if (line != null)
+        if (line != null) {
+            peekedLine = null
             lineIndex++
+        }
         return line
     }
 
     fun peekLine(): String? {
         if (lineIndex !in lines.indices) return null
-        val line = lines[lineIndex]
+        val line = peekedLine ?: preProcessLine(lines[lineIndex]) ?: return null
+        peekedLine = line
         val indent = line.indentSize()
-        if (indent != null && indent < blockIndents)
+        if (indent != null && indent < blockIndents) {
+            peekedLine = null
             return null
-        return line.substring(blockIndents)
+        }
+        return line.drop(blockIndents)
     }
 
     fun parseInlineTextUntil(
@@ -139,8 +169,21 @@ class MarkdownParser(source: String) {
     fun addDefaultParsers() {
         blockParsers.add(CodeBlockParser)
         blockParsers.add(HeaderParser)
+        blockParsers.add(ListParser)
         inlineParsers.add(ItalicsParser)
         inlineParsers.add(LinkParser)
+    }
+
+    fun getLineIndex(): Int {
+        return lineIndex
+    }
+
+    fun mergeBlocks(elements: List<MarkdownBlock>): MarkdownBlock {
+        return elements.singleOrNull() ?: BlockList(elements)
+    }
+
+    fun getIndent(): Int {
+        return blockIndents
     }
 }
 
