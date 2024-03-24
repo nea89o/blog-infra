@@ -58,6 +58,10 @@ class MarkdownParser(source: String) {
         if (text[0] == ' ')
             return Pair(Whitespace(), text.substring(1))
         val nextSpecial = text.indexOfFirst { it in inlineParsers.flatMap { it.specialSyntax } || it == ' ' }
+        if (nextSpecial == 0)
+            return Pair(Word(text.substring(0, 1)), text.substring(1))
+        if (nextSpecial == -1)
+            return Pair(Word(text), "")
         return Pair(Word(text.substring(0, nextSpecial)), text.substring(nextSpecial))
     }
 
@@ -103,7 +107,8 @@ class MarkdownParser(source: String) {
     }
 
     fun collapseInlineFormat(sequence: List<MarkdownFormat>, trimWhitespace: Boolean): MarkdownFormat {
-        return FormatSequence(collapseMarkdownFormats(expandMarkdownFormats(sequence), trimWhitespace))
+        val formats = collapseMarkdownFormats(expandMarkdownFormats(sequence), trimWhitespace)
+        return formats.singleOrNull() ?: FormatSequence(formats)
     }
 
     fun readDocument(): Document {

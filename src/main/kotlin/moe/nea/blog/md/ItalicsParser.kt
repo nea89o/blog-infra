@@ -2,7 +2,7 @@ package moe.nea.blog.md
 
 object ItalicsParser : InlineParser {
     override fun detect(lookback: MarkdownFormat, rest: String): Boolean {
-        return lookback is Whitespace && "\\*+[^ ].*".toRegex().matches(rest)
+        return (lookback is Whitespace || lookback is Begin) && "\\*+[^ ].*".toRegex().matches(rest)
     }
 
     override val specialSyntax: Set<Char>
@@ -48,10 +48,6 @@ object ItalicsParser : InlineParser {
         if (secondStarCount == 1)
             firstElement = Italics(firstElement)
         if (secondStarCount == firstStarCount) {
-            if (isBold)
-                firstElement = Bold(firstElement)
-            if (isItalics)
-                firstElement = Italics(firstElement)
             return Pair(firstElement, remainingText)
         }
 
