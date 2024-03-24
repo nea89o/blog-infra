@@ -6,7 +6,7 @@ import java.io.PrintStream
 data class CodeBlock(val language: String, val lines: List<String>) : MarkdownBlock {
     override fun debugFormat(indent: Int, printStream: PrintStream) {
         printStream.indent(indent)
-        printStream.println("<code lang=$language>")
+        printStream.println("<code language=$language>")
         lines.forEach {
             printStream.indent(indent)
             printStream.println(it)

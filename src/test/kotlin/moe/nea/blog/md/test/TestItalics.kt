@@ -1,26 +1,8 @@
 package moe.nea.blog.md.test
 
-import moe.nea.blog.md.MarkdownFormat
-import moe.nea.blog.md.MarkdownParser
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-class TestItalics {
-
-    fun parseInline(string: String): MarkdownFormat {
-        val parser = MarkdownParser(string)
-        parser.addDefaultParsers()
-        return parser.parseInlineText(string)
-    }
-
-    fun assertInlineFormat(expected: String, source: String) {
-        val format = parseInline(source)
-        val baos = ByteArrayOutputStream()
-        format.debugFormat(PrintStream(baos))
-        assertEquals(expected, baos.toByteArray().decodeToString())
-    }
+class TestItalics : MarkdownTest() {
 
     @Test
     fun testDoubleStartItalicsInBold() {
