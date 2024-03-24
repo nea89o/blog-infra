@@ -46,6 +46,11 @@ class TestItalics {
     }
 
     @Test
+    fun testStandaloneDoubleStar() {
+        assertInlineFormat("** hi*", "** hi*")
+    }
+
+    @Test
     fun testStandaloneItalics() {
         assertInlineFormat("<i>italic</i>", "*italic*")
     }
