@@ -71,11 +71,39 @@ class MarkdownParser(source: String) {
             lastToken = tok
             remaining = next
         }
-        return collapseInlineFormat(seq)
+        return collapseInlineFormat(seq, true)
     }
 
-    fun collapseInlineFormat(sequence: List<MarkdownFormat>): MarkdownFormat {
-        return FormatSequence(sequence)
+    private fun expandMarkdownFormats(sequence: List<MarkdownFormat>): List<MarkdownFormat> {
+        val elongated = mutableListOf<MarkdownFormat>()
+        for (markdownFormat in sequence) {
+            if (markdownFormat is FormatSequence) {
+                elongated.addAll(expandMarkdownFormats(markdownFormat.list))
+            } else {
+                elongated.add(markdownFormat)
+            }
+        }
+        return elongated
+    }
+
+    private fun collapseMarkdownFormats(
+        sequence: List<MarkdownFormat>,
+        trimWhitespace: Boolean
+    ): MutableList<MarkdownFormat> {
+        val shortened = mutableListOf<MarkdownFormat>()
+        var last: MarkdownFormat = if (trimWhitespace) Whitespace() else Begin()
+        for (format in sequence) {
+            if (format is Whitespace && last is Whitespace) {
+                continue
+            }
+            last = format
+            shortened.add(format)
+        }
+        return shortened
+    }
+
+    fun collapseInlineFormat(sequence: List<MarkdownFormat>, trimWhitespace: Boolean): MarkdownFormat {
+        return FormatSequence(collapseMarkdownFormats(expandMarkdownFormats(sequence), trimWhitespace))
     }
 
     fun readDocument(): Document {

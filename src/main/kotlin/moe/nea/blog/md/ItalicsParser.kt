@@ -23,7 +23,7 @@ object ItalicsParser : InlineParser {
         val firstSequence = mutableListOf<MarkdownFormat>()
         var remainingText = text.substring(firstStarCount)
         var lastToken: MarkdownFormat = Begin() // TODO: dedicated begin token
-        while (true) {
+        while (remainingText.isNotEmpty()) {
             val (element, next) = parser.parseInlineTextOnce(lastToken, remainingText)
             remainingText = next
             lastToken = element
@@ -42,7 +42,7 @@ object ItalicsParser : InlineParser {
         if (secondStarCount < 1) error("Invalid italics/bold sequence")
 
         remainingText = remainingText.substring(secondStarCount)
-        var firstElement = parser.collapseInlineFormat(firstSequence)
+        var firstElement = parser.collapseInlineFormat(firstSequence, false)
         if (secondStarCount == 2)
             firstElement = Bold(firstElement)
         if (secondStarCount == 1)
@@ -57,7 +57,7 @@ object ItalicsParser : InlineParser {
 
         val secondSequence = mutableListOf<MarkdownFormat>()
         lastToken = Begin()
-        while (true) {
+        while (remainingText.isNotEmpty()) {
             val (element, next) = parser.parseInlineTextOnce(lastToken, remainingText)
             remainingText = next
             lastToken = element
@@ -79,7 +79,7 @@ object ItalicsParser : InlineParser {
         if (thirdStarCount != firstStarCount - secondStarCount) {
             error("Invalid italics/bold sequence")
         }
-        var secondElement = parser.collapseInlineFormat(secondSequence)
+        var secondElement = parser.collapseInlineFormat(secondSequence, false)
         var combined: MarkdownFormat = FormatSequence(firstElement, secondElement)
         if (thirdStarCount == 1)
             combined = Italics(combined)
