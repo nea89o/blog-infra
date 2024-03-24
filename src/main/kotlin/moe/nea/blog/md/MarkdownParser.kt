@@ -70,17 +70,21 @@ class MarkdownParser(source: String) {
     }
 
     fun parseInlineTextOnce(lookback: MarkdownFormat, text: String): Pair<MarkdownFormat, String> {
+        require(text.isNotEmpty()) // TODO handle empty string
         val parser = inlineParsers.find { it.detect(lookback, text) }
-        if (parser != null)
+        if (parser != null) {
             return parser.parse(this, text)
-        require(!text.isEmpty()) // TODO handle empty string
-        if (text[0] == ' ')
+        }
+        if (text[0] == ' ') {
             return Pair(Whitespace(), text.substring(1))
+        }
         val nextSpecial = text.indexOfFirst { it in inlineParsers.flatMap { it.specialSyntax } || it == ' ' }
-        if (nextSpecial == 0)
+        if (nextSpecial == 0) {
             return Pair(Word(text.substring(0, 1)), text.substring(1))
-        if (nextSpecial == -1)
+        }
+        if (nextSpecial == -1) {
             return Pair(Word(text), "")
+        }
         return Pair(Word(text.substring(0, nextSpecial)), text.substring(nextSpecial))
     }
 

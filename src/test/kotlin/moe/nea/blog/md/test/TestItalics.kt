@@ -56,6 +56,16 @@ class TestItalics {
     }
 
     @Test
+    fun testFreestandingStar() {
+        assertInlineFormat("left * right", "left * right")
+    }
+
+    @Test
+    fun testFreestandingStarInItalics() {
+        assertInlineFormat("<i>left * right</i>", "*left * right*")
+    }
+
+    @Test
     fun testNested() {
         assertInlineFormat("<i>a <b>bold</b> b</i>", "*a **bold** b*")
         assertInlineFormat("<i>a <i>double italics</i></i>", "*a *double italics**")
