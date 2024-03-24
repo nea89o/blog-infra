@@ -13,18 +13,15 @@ object ListParser : BlockParser {
         val prefix = line.substring(0, indentSize + 2)
         var bypassLineIndex = parser.getLineIndex()
         val indentDepth = parser.getIndent()
-        val processor = object : LinePreProcessor {
-            override fun preprocess(lineIndex: Int, line: String): String? {
-                if (line.substring(indentDepth).startsWith(prefix)) {
-                    if (bypassLineIndex == lineIndex) {
-                        return line.substring(0, indentDepth) +
-                                " ".repeat(indentSize + 2) +
-                                line.substring(indentDepth + indentSize + 2)
-                    } else {
-                        return null
-                    }
+        val processor = LinePreProcessor.whileIgnoringFirst(indentDepth) { lineIndex, line ->
+            if (line.startsWith(prefix)) {
+                if (bypassLineIndex == lineIndex) {
+                    " ".repeat(indentSize + 2) + line.substring(indentSize + 2)
+                } else {
+                    null
                 }
-                return line
+            } else {
+                line
             }
         }
         parser.pushPreProcessor(processor)
