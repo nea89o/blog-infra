@@ -140,6 +140,7 @@ class MarkdownParser(source: String) {
         blockParsers.add(CodeBlockParser)
         blockParsers.add(HeaderParser)
         inlineParsers.add(ItalicsParser)
+        inlineParsers.add(LinkParser)
     }
 }
 

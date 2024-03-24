@@ -14,6 +14,15 @@ class TestItalics : MarkdownTest() {
         assertInlineFormat("<i><b>both</b> just italics</i>", "***both** just italics*")
     }
 
+
+    @Test
+    fun otherMarkdownInItalics() {
+        assertInlineFormat(
+            "<i><link target=https://nea.moe><b>test</b></link></i>",
+            "*[**test**](https://nea.moe)*"
+        )
+    }
+
     @Test
     fun testDoubleStartRestartingItalics() {
         assertInlineFormat(
