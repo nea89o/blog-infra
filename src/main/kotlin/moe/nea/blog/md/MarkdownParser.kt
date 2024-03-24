@@ -89,12 +89,12 @@ class MarkdownParser(source: String) {
         var remaining = text
         var lastToken: MarkdownFormat = initialLookback
         while (remaining.isNotEmpty()) {
+            if (breakout(lastToken, remaining))
+                break
             val (tok, next) = parseInlineTextOnce(lastToken, remaining)
             seq.add(tok)
             lastToken = tok
             remaining = next
-            if (breakout(tok, next))
-                break
         }
         return seq to remaining
     }
@@ -172,6 +172,7 @@ class MarkdownParser(source: String) {
         blockParsers.add(ListParser)
         inlineParsers.add(ItalicsParser)
         inlineParsers.add(LinkParser)
+        inlineParsers.add(ImageParser)
     }
 
     fun getLineIndex(): Int {
