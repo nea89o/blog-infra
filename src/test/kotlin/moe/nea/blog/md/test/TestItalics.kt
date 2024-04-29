@@ -15,6 +15,12 @@ class TestItalics : MarkdownTest() {
     }
 
     @Test
+    fun testBeginningInTheMiddleOfTheWord() {
+        assertInlineFormat("inoneword<i>italic</i>", "inoneword*italic*")
+        assertInlineFormat("<i>multiple</i>inoneword<i>italic</i>", "*multiple*inoneword*italic*")
+    }
+
+    @Test
     fun otherMarkdownInItalics() {
         assertInlineFormat(
             "<i><link target=https://nea.moe><b>test</b></link></i>",
