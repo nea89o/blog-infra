@@ -64,6 +64,7 @@ class TestItalics : MarkdownTest() {
     @Test
     fun testFreestandingStarInItalics() {
         assertInlineFormat("<i>left * right</i>", "*left * right*")
+        assertInlineFormat("left * middle ** later", "left * middle ** later")
     }
 
     @Test
