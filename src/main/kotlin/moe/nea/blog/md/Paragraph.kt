@@ -6,7 +6,11 @@ import java.io.PrintStream
 data class Paragraph(val format: MarkdownFormat) : MarkdownBlock {
     override fun debugFormat(indent: Int, printStream: PrintStream) {
         printStream.indent(indent)
+        printStream.println("<p>")
+        printStream.indent(indent)
         format.debugFormat(printStream)
         printStream.println()
+        printStream.indent(indent)
+        printStream.println("</p>")
     }
 }

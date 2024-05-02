@@ -9,14 +9,19 @@ import kotlin.test.assertEquals
 
 abstract class MarkdownTest {
 
+    open fun registerExtraParser(parser: MarkdownParser) {
+    }
+
     fun parseInline(string: String): MarkdownFormat {
         val parser = MarkdownParser(string)
         parser.addDefaultParsers()
+        registerExtraParser(parser)
         return parser.parseInlineText(string)
     }
     fun parseDoc(string: String): Document {
         val parser = MarkdownParser(string)
         parser.addDefaultParsers()
+        registerExtraParser(parser)
         return parser.readDocument()
     }
 

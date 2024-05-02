@@ -7,13 +7,19 @@ class ListTest : MarkdownTest() {
     fun testBasicList() {
         assertDocumentFormat(
             """
+            <p>
             Some Text:
+            </p>
             <list>
               <element>
+                <p>
                 First
+                </p>
               </element>
               <element>
+                <p>
                 Second
+                </p>
               </element>
             </list>
             """.trimIndent(),
@@ -28,14 +34,22 @@ class ListTest : MarkdownTest() {
     fun testBlockContinuation() {
         assertDocumentFormat(
             """
+            <p>
             Some Text:
+            </p>
             <list>
               <element>
+                <p>
                 First More First
+                </p>
               </element>
               <element>
+                <p>
                 Second
+                </p>
+                <p>
                 More Second
+                </p>
               </element>
             </list>
             """.trimIndent(),
@@ -53,18 +67,26 @@ class ListTest : MarkdownTest() {
     fun testNestedLists() {
         assertDocumentFormat(
             """
+            <p>
             Some Text:
+            </p>
             <list>
               <element>
+                <p>
                 First
+                </p>
                 <list>
                   <element>
+                    <p>
                     Another List
+                    </p>
                   </element>
                 </list>
               </element>
               <element>
+                <p>
                 Second
+                </p>
               </element>
             </list>
             """.trimIndent(),

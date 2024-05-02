@@ -8,9 +8,13 @@ class BlockQuoteTest : MarkdownTest() {
         assertDocumentFormat(
             """
             <quote>
+              <p>
               hi
+              </p>
               <quote>
+                <p>
                 hello
+                </p>
               </quote>
             </quote>
             """.trimIndent(),
@@ -26,7 +30,9 @@ class BlockQuoteTest : MarkdownTest() {
         assertDocumentFormat(
             """
             <quote>
+              <p>
               hi
+              </p>
               <code language=kotlin>
               fun helloWorld(): Unit =
                   "Hello, World!".let(::println)

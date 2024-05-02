@@ -13,7 +13,7 @@ import java.io.PrintStream
 data class NoteBlock(val noteType: String, val child: MarkdownBlock) : MarkdownBlock {
 	override fun debugFormat(indent: Int, printStream: PrintStream) {
 		printStream.indent(indent)
-		printStream.println("<note type=\"$noteType\">")
+		printStream.println("<note type=$noteType>")
 
 		child.debugFormat(indent + 2, printStream)
 

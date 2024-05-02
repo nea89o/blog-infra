@@ -21,7 +21,15 @@ class MarkdownParser(source: String) {
 	}
 
 	fun readChildBlock(): MarkdownBlock? {
-		val peek = peekLine() ?: return null
+		var peek = ""
+		while (true) {
+			peek = peekLine() ?: return null
+			if (peek.isBlank()) {
+				consumeLine()
+			} else {
+				break
+			}
+		}
 		val blockParser = findParserFor(peek) ?: ParagraphParser
 		return blockParser.parse(this)
 	}

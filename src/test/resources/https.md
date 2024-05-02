@@ -110,7 +110,7 @@ void threadA() {
   String localVariable = doSomeCalculation();
   doSomeExpensiveAndSlowNetworkCall();
   synchronized (lockObject) {
-    someSharedVariable = doSomeCalculationWithTheSharedVariable(localVariable, someSharedVariable);  
+    someSharedVariable = doSomeCalculationWithTheSharedVariable(localVariable, someSharedVariable);
   }
   doSomeMoreCalculation(localVariable);
 }

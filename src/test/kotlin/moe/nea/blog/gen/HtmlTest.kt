@@ -13,7 +13,7 @@ class HtmlTest : HtmlGenerationTest() {
 	fun testBiggerFile() {
 		assertGeneratorMD(
 			"""
-			|<h1>Hello World</h1><p></p><p><b><em>lol</em> hehe</b></p><pre><code class="language-java">public class ObjectControllerFactoryManagerProvider&lt;T extends ObjectControllerFactoryManager&lt;T&gt;&gt; {
+			|<h1>Hello World</h1><p><b><em>lol</em> hehe</b></p><pre><code class="language-java">public class ObjectControllerFactoryManagerProvider&lt;T extends ObjectControllerFactoryManager&lt;T&gt;&gt; {
 			|   public ObjectControllerFactoryManagerProvider() {}
 			|}</code></pre>
 			""".trimMargin(),
