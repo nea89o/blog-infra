@@ -8,6 +8,7 @@ import moe.nea.blog.md.FormatSequence
 import moe.nea.blog.md.Header
 import moe.nea.blog.md.Italics
 import moe.nea.blog.md.Link
+import moe.nea.blog.md.MDList
 import moe.nea.blog.md.MarkdownElement
 import moe.nea.blog.md.Paragraph
 import moe.nea.blog.md.Whitespace
@@ -48,6 +49,15 @@ class MD2HtmlGenerator {
 		}
 		registerFragmentGenerator<Italics> { generator, node ->
 			element("em", mapOf(), generator.generateHtml(node.inner))
+		}
+		registerFragmentGenerator<MDList> { generator, node ->
+			element("ul", mapOf()) {
+				for (item in node.elements) {
+					element("li", mapOf()) {
+						+generator.generateHtml(item)
+					}
+				}
+			}
 		}
 		registerFragmentGenerator<Link> { generator, node ->
 			element("a", mapOf("href" to node.target), generator.generateHtml(node.label ?: Begin()))
